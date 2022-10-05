@@ -1,0 +1,55 @@
+﻿<Window x:Class="AddressBookWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AddressBookWPF"
+        mc:Ignorable="d"
+        Title="Adressboken" Height="450" Width="800">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Förnamn" />
+            <TextBox x:Name="tb_FirstName" />
+            <TextBlock Text="Efternamn" />
+            <TextBox x:Name="tb_LastName" />
+            <TextBlock Text="E-Postasdress" />
+            <TextBox x:Name="tb_Email" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Gatuadress" />
+                    <TextBox x:Name="tb_StreetName" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="Postnummer" />
+                    <TextBox x:Name="tb_PostalCode" />
+                </StackPanel>
+                
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="Ort" />
+                    <TextBox x:Name="tb_City" />
+                </StackPanel>
+
+            </Grid>
+        </StackPanel>
+
+
+
+        <ListView Grid.Column="1">
+            
+        </ListView>
+
+    </Grid>
+</Window>

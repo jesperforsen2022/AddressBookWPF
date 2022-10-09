@@ -57,12 +57,22 @@
 
             <Button x:Name="btn_Add"
                     Click="btn_Add_Click"
+                    KeyUp="btn_Add_KeyUp"
                     Grid.Row="1" 
                     Padding="35 8"
                     HorizontalAlignment="Right" 
                     VerticalAlignment="Bottom" 
                     Margin="20" 
                     Content="Lägg till" />
+            
+            <Button x:Name="btn_Update"
+                    Click="btn_Update_Click"
+                    Grid.Row="1" 
+                    Padding="35 8"
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Bottom" 
+                    Margin="20" 
+                    Content="Uppdatera" />
         </Grid>
         
 

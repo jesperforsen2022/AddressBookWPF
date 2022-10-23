@@ -1,9 +1,12 @@
 ﻿using AddressBookWPF.Models;
+using AddressBookWPF.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,121 +24,166 @@ namespace AddressBookWPF
 
     public partial class MainWindow : Window
     {
-        private ObservableCollection<ContactPerson> contacts;
+        //creates a lust
+        private ObservableCollection<ContactPerson> contacts = new ObservableCollection<ContactPerson>();
+        //saves the list to the desktop
+        private IFileManager _fileManager = new FileManager();
+        private List<ContactPerson> _contacts = new();
+        private string _filePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\ContactApp.json";
+
         public MainWindow()
         {
             InitializeComponent();
-            contacts = new ObservableCollection<ContactPerson>();
+            lv_Contacts.ItemsSource = contacts;
+            _fileManager.Save(_filePath, JsonConvert.SerializeObject(_contacts));
 
             if (contacts.Count > 0)
                 lv_Contacts.ItemsSource = contacts.OrderByDescending(x => x.LastName).ToList();
             else
                 lv_Contacts.ItemsSource = contacts;
-            
-            btn_Update.Visibility = Visibility.Hidden;
-        }
+            _contacts = JsonConvert.DeserializeObject<List<ContactPerson>>(_fileManager.Read(_filePath));
+            btn_Clear.Visibility = Visibility.Hidden;
 
+
+        }
+        
 
         private void btn_Add_Click(object sender, RoutedEventArgs e)
         {
+            //adds contact to list when clicking button
             AddToList();
-        }
-        private void btn_Add_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Return)
-            {
-                if (!string.IsNullOrEmpty(tb_Email.Text))
-                {
-                    AddToList();
-                }
-                
-            }
-        }
 
+
+        }
 
         private void ClearFields()
         {
+            //method to clear the list
             tb_FirstName.Text = "";
             tb_LastName.Text = "";
             tb_Email.Text = "";
             tb_StreetName.Text = "";
             tb_PostalCode.Text = "";
             tb_City.Text = "";
+            btn_Clear.Visibility = Visibility.Hidden;
         }
 
 
 
         private void btn_Remove_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            var contact = (ContactPerson)button!.DataContext;
+            //deletes contact when clicking the "Trash can" Button
+            try
+            {
+                var button = sender as Button;
+                var contact = (ContactPerson)button!.DataContext;
 
-            contacts.Remove(contact);
-            lv_Contacts.ItemsSource = contacts.OrderByDescending(x => x.LastName).ToList();
+                contacts.Remove(contact);
+                lv_Contacts.ItemsSource = contacts.OrderByDescending(x => x.LastName).ToList();
+                _fileManager.Save(_filePath, JsonConvert.SerializeObject(_contacts));
+            }
+            catch { }
         }
 
         private void lv_Contacts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-           var contact = (ContactPerson)lv_Contacts.SelectedItems[0]!;
-            tb_FirstName.Text = contact.FirstName;
-            tb_LastName.Text = contact.LastName;
-            tb_Email.Text = contact.Email;
-            tb_StreetName.Text = contact.StreetName;
-            tb_PostalCode.Text = contact.PostalCode;
-            tb_City.Text = contact.City;
-
-            btn_Add.Visibility = Visibility.Hidden;
-            btn_Update.Visibility = Visibility.Visible;
+            //shows details of a contact when marked
+            try
+            {
+                var obj = sender as ListView;
+                var contact = (ContactPerson)obj!.SelectedItem;
+                if (contact != null)
+                {
+                    btn_Clear.Visibility = Visibility.Visible;
+                    tb_FirstName.Text = contact.FirstName;
+                    tb_LastName.Text = contact.LastName;
+                    tb_Email.Text = contact.Email;
+                    tb_StreetName.Text = contact.StreetName;
+                    tb_PostalCode.Text = contact.PostalCode;
+                    tb_City.Text = contact.City;
+                }
+               
+            }
+            catch { }
+         
         }
 
-        private void btn_Update_Click(object sender, RoutedEventArgs e)
+        private void btn_Clear_Click(object sender, RoutedEventArgs e)
         {
+            //clears the textboxes for the user to add a new contact
             var obj = (Button)sender;
-            var contact = (ContactPerson)obj.DataContext;
-            contacts.Remove(contact);
+            var contact = (ContactPerson)obj!.DataContext;
 
-            contacts.Add(new ContactPerson
-            {
-                FirstName = "" + this.tb_FirstName.Text + "",
-                LastName = "" + this.tb_LastName.Text + "",
-                Email = "" + this.tb_Email.Text + "",
-                StreetName = "" + this.tb_StreetName.Text + "",
-                PostalCode = "" + this.tb_PostalCode.Text + "",
-                City = "" + this.tb_City.Text + "",
-            });
+            ClearFields();
 
-
-
-
+          
 
         }
 
 
         private void AddToList()
         {
+            //the method to add contact to the list
+            try
+            {
                 var contact = contacts.FirstOrDefault(x => x.Email == tb_Email.Text);
-            if (contact == null)
-            {
-                contacts.Add(new ContactPerson
+                btn_Clear.Visibility = Visibility.Visible;
+                if (contact == null)
                 {
-                    FirstName = tb_FirstName.Text,
-                    LastName = tb_LastName.Text,
-                    Email = tb_Email.Text,
-                    StreetName = tb_StreetName.Text,
-                    PostalCode = tb_PostalCode.Text,
-                    City = tb_City.Text,
+                    contacts.Add(new ContactPerson
+                    {
+                        FirstName = tb_FirstName.Text,
+                        LastName = tb_LastName.Text,
+                        Email = tb_Email.Text,
+                        StreetName = tb_StreetName.Text,
+                        PostalCode = tb_PostalCode.Text,
+                        City = tb_City.Text,
 
-                }); ;
+                    }); ;
+                }
+                else
+                {
+                    MessageBox.Show("Det finns redan en kontakt med samma e-postadress.");
+                }
+
+                lv_Contacts.ItemsSource = contacts.OrderByDescending(x => x.LastName).ToList();
+
+                ClearFields();
             }
-            else
-            {
-                MessageBox.Show("Det finns redan en kontakt med samma e-postadress.");
-            }
+            catch { }
 
-            lv_Contacts.ItemsSource = contacts.OrderByDescending(x => x.LastName).ToList();
-
-            ClearFields();
         }
+        private void btn_SecondUpdate_Click(object sender, RoutedEventArgs e) 
+        {
+            //updates the contact when pushing the "update marker"
+            
+            try
+            {
+                btn_Clear.Visibility = Visibility.Visible;
+                var button = sender as Button;
+                var contact = (ContactPerson)button!.DataContext;
+
+                if (contact != null)
+                {
+                    contacts.Add(new ContactPerson
+                    {
+                        FirstName = tb_FirstName.Text,
+                        LastName = tb_LastName.Text,
+                        Email = tb_Email.Text,
+                        StreetName = tb_StreetName.Text,
+                        PostalCode = tb_PostalCode.Text,
+                        City = tb_City.Text,
+
+                    }); ;
+                    contacts.Remove(contact);
+                    lv_Contacts.ItemsSource = contacts.OrderByDescending(x => x.LastName).ToList();
+                    _fileManager.Save(_filePath, JsonConvert.SerializeObject(_contacts));
+                }
+                
+            }
+            catch { }
+        }
+
 
     }
 }

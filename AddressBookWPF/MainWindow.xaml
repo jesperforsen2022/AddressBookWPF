@@ -57,22 +57,21 @@
 
             <Button x:Name="btn_Add"
                     Click="btn_Add_Click"
-                    KeyUp="btn_Add_KeyUp"
-                    Grid.Row="1" 
-                    Padding="35 8"
-                    HorizontalAlignment="Right" 
-                    VerticalAlignment="Bottom" 
-                    Margin="20" 
-                    Content="Lägg till" />
+                    Grid.Row="1"
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Bottom"  
+                    Content="Lägg till"
+                    Style="{StaticResource defaultButton}"
+                    />
             
-            <Button x:Name="btn_Update"
-                    Click="btn_Update_Click"
+            <Button x:Name="btn_Clear"
+                    Click="btn_Clear_Click"
                     Grid.Row="1" 
-                    Padding="35 8"
                     HorizontalAlignment="Right" 
                     VerticalAlignment="Bottom" 
-                    Margin="20" 
-                    Content="Uppdatera" />
+                    Content="Ny Kontakt"
+                    Style="{StaticResource defaultButton}"
+                    />
         </Grid>
         
 
@@ -94,14 +93,20 @@
 
                         <Button
                             Click="btn_Remove_Click"
-                            Background="Transparent"
-                            BorderThickness="0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Grid.Column="1" 
-                            FontFamily="Segoe MDL2 Assets" 
-                            Content="&#xE74D;" />
-                        
+                            Style="{StaticResource deleteButton}"
+                            />
+                        <Button
+                            Click="btn_SecondUpdate_Click"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Grid.Column="0" 
+                            Style="{StaticResource SecondUpdateButton}"
+                            />
+
+
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
